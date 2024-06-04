@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginPage extends StatelessWidget {
   final TextEditingController _usernameController = TextEditingController();
@@ -18,7 +19,7 @@ class LoginPage extends StatelessWidget {
             TextField(
               controller: _usernameController,
               decoration: InputDecoration(
-                labelText: 'Username',
+                labelText: 'Email',
               ),
             ),
             TextField(
@@ -30,15 +31,23 @@ class LoginPage extends StatelessWidget {
             ),
             SizedBox(height: 20),
             ElevatedButton(
-              onPressed: () {
-            
-                if (_usernameController.text == 'user' &&
-                    _passwordController.text == 'password') {
+              onPressed: () async {
+                try {
+                  // Sign in with email and password
+                  // Navigate to home page if authentication is successful
                   Navigator.pushReplacementNamed(context, '/home_page');
-                } else {
+                } on FirebaseAuthException catch (error) {
+                  // Show error message if authentication fails
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('Invalid credentials'),
+                      content: Text('Error: ${error.message}'),
+                    ),
+                  );
+                } catch (error) {
+                  // Show generic error message if any other error occurs
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Error: ${error.toString()}'),
                     ),
                   );
                 }
@@ -51,5 +60,3 @@ class LoginPage extends StatelessWidget {
     );
   }
 }
-
-

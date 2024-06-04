@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'login_page.dart';
 import 'home_page.dart';
@@ -6,12 +7,19 @@ import 'gallery_page.dart';
 import 'facts_page.dart';
 import 'cart_model.dart';
 import 'cart_page.dart';
+import 'contacts_page.dart';
+import 'theme_notifier.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => CartModel()),
+        ChangeNotifierProvider(create: (context) => ThemeNotifier()), 
+        // ChangeNotifierProvider(create: (context) => GalleryModel()),
       ],
       child: MyApp(),
     ),
@@ -21,18 +29,21 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
+
     return MaterialApp(
       title: 'LlamaParadise',
-      theme: ThemeData(
-        primarySwatch: Colors.yellow,
-      ),
-      initialRoute: '/home', 
+      theme: ThemeData.light(),
+      darkTheme: ThemeData.dark(),
+      themeMode: themeNotifier.themeMode, // Usar el modo de tema del ThemeNotifier
+      initialRoute: '/home',
       routes: {
         '/home': (context) => LoginPage(),
         '/gallery': (context) => GalleryPage(),
         '/facts': (context) => FactsPage(),
         '/home_page': (context) => HomePage(),
         '/cart': (context) => CartPage(),
+        '/contacts': (context) => ContactsPage(),
       },
     );
   }
